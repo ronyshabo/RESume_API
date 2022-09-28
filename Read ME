@@ -1,0 +1,16 @@
+Welcome to my first full standalone project.
+I will demonstrate the API I am building using FastAPI 
+in addition I am connecting it to SQLalchecmy database
+
+To start make sure you set Up ssh correctly then clone the repo.
+1- make sure you have the venv initalized then activated
+   $ pip install virtualenv
+
+   I used api_venv as a name and so activating it becomes:
+   $ source api_venv/scripts/activate
+   
+2- setup Uvicorn, then run locally 
+   $ pip install uvicorn
+   
+   Run Uvicorn locally using
+   $uvicorn app.main:app --reload
