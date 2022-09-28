@@ -1,0 +1,15 @@
+venv/
+venv/*
+
+bin/**
+lib/**
+
+# Python specific 
+**/pyvenv.cfg
+**/pip-selfcheck.json
+**/secrets.py
+.coverage
+
+
+__pycache__
+readme.txt
