@@ -110,6 +110,8 @@ def HTML_Source_code():
 #-2- Find all
 @app.get("/resume")
 def get_resume(db: Session = Depends(get_db)):
+    """
+    """
     
     # # here  you use cursor.excute and pass in the SQL statment
     # cursor.execute(""" SELECT * FROM my_resume
@@ -122,6 +124,8 @@ def get_resume(db: Session = Depends(get_db)):
 #-3- Find By {id}
 @app.get("/Entry/{id}")
 def get_Entry_by_ID(id: int):
+    """
+    """
     
     cursor.execute(""" SELECT * from my_resume WHERE id= %s """, (str(id),))
     entry_by_id = cursor.fetchone()
@@ -137,13 +141,17 @@ def get_Entry_by_ID(id: int):
 # -4- Add to DB with 
 @app.post("/Experiance", status_code=status.HTTP_201_CREATED)
 def create_entry(post:Post,db: Session = Depends(get_db)):
+    """
+    """
 
+    # ---- this is the original method using sql--------
     # cursor.execute(""" INSERT INTO my_resume (id, title, work_place, skills, time_of_work) 
     #                VALUES (%s,%s,%s,%s) RETURNING *
     #                """, 
     #                (post.id, post.title, post.work_place, post.skills),)
     # new_experiance = cursor.fetchone()
     # conn.commit()
+
     new_experiance = models.Resume(id = post.id, title = post.title, work_place = post.work_place, skills = post.skills, time_of_work = post.time_of_work)
     
     if new_experiance == None:
@@ -158,7 +166,8 @@ def create_entry(post:Post,db: Session = Depends(get_db)):
 # -5-
 @app.delete("/Entry/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_entry(id:int):
-    
+    """
+    """
     #find the index in the arry that has the required ID
     cursor.execute(""" DELETE from my_resume WHERE id= %s returning * """, (str(id),))
     delete_entry = cursor.fetchone()
@@ -175,13 +184,15 @@ def delete_entry(id:int):
 # -6-
 @app.put("/Entry/{id}")
 def update_entry(id:int, post:Post):
+    """
+    """
     
     cursor.execute(""" UPDATE my_resume SET id = %s, title = %s, work_place = %s, skills = %s, time_of_work = %s WHERE id = %s returning * """,
                    (post.id,post.title, post.work_place,post.skills,post.time_of_work, str(id)))
     updated_post = cursor.fetchone()
     conn.commit()
     
-    if updated_post==None:
+    if updated_post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'post with id: {id} Does not exist')
     
     return{"data":updated_post}
@@ -193,6 +204,14 @@ def update_entry(id:int, post:Post):
 #SQL alchemy test ground
 @app.get("/sql")
 def test_resume(db: Session = Depends(get_db)):
+    """_summary_
+
+    Args:
+        db (Session, optional): _description_. Defaults to Depends(get_db).
+
+    Returns:
+        _type_: _description_
+    """
 
     # the way to do it is
     #  db ogject and here we need to pass in the model, in our case its the resume in model file. (file.class)
