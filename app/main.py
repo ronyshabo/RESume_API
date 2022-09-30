@@ -30,11 +30,11 @@ def get_db():
         
         
 # importing Pydantic and adding this class, 
-# in addition to this refrencing this class in the post call allows it to act like a template
-# giving all the warnings if post call doesn't have the defined catigories, 
+# in addition to this refrencing this class in the resume call allows it to act like a template
+# giving all the warnings if resume call doesn't have the defined catigories, 
 # or not the correct data type
 
-class Post(BaseModel):
+class Resume(BaseModel):
     # Defining the Schema "prone to be amended pending on DB"
     id: int
     title: str 
@@ -58,7 +58,7 @@ while True:
         
         
 
-my_posts = [{
+my_resumes = [{
              "id":1, 
              "title":"Network Engineer I ",
              "work_place":"Charter Communications, Spectrum Enterprise ",
@@ -81,15 +81,15 @@ my_posts = [{
                 -3-Optimize SQL queries for the heavy-load parts of our databases
 """}]
 
-def find_post(id):
+def find_resume(id):
     """ Auxilary Functions to help make sure to find the {id} and the index
     for the search query  """
-    for p in my_posts:
+    for p in my_resumes:
         if p["id"] == id:
             return p
         
-def find_index_post(id):
-    for i, p in enumerate(my_posts):
+def find_index_resume(id):
+    for i, p in enumerate(my_resumes):
         if p['id'] ==id:
             return i
     
@@ -129,18 +129,18 @@ def get_Entry_by_ID(id: int):
     
     cursor.execute(""" SELECT * from my_resume WHERE id= %s """, (str(id),))
     entry_by_id = cursor.fetchone()
-    post = entry_by_id
-    if not post:
+    resume = entry_by_id
+    if not resume:
         print("Entry was not found")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST       ,
                             detail=f'Entry with id: {id} was not found'
                             )
-    return {"entry_detail": post}
+    return {"entry_detail": resume}
 
 
 # -4- Add to DB with 
 @app.post("/Experiance", status_code=status.HTTP_201_CREATED)
-def create_entry(post:Post,db: Session = Depends(get_db)):
+def create_entry(resume:Resume,db: Session = Depends(get_db)):
     """
     """
 
@@ -148,14 +148,14 @@ def create_entry(post:Post,db: Session = Depends(get_db)):
     # cursor.execute(""" INSERT INTO my_resume (id, title, work_place, skills, time_of_work) 
     #                VALUES (%s,%s,%s,%s) RETURNING *
     #                """, 
-    #                (post.id, post.title, post.work_place, post.skills),)
+    #                (resume.id, resume.title, resume.work_place, resume.skills),)
     # new_experiance = cursor.fetchone()
     # conn.commit()
 
-    new_experiance = models.Resume(id = post.id, title = post.title, work_place = post.work_place, skills = post.skills, time_of_work = post.time_of_work)
+    new_experiance = models.Resume(id = resume.id, title = resume.title, work_place = resume.work_place, skills = resume.skills, time_of_work = resume.time_of_work)
     
     if new_experiance == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'post with id: {id} Does not exist')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
     db.add(new_experiance)
     db.commit()
     db.refresh(new_experiance)
@@ -173,9 +173,9 @@ def delete_entry(id:int):
     delete_entry = cursor.fetchone()
     conn.commit()
     
-    # post = test_post
+    # resume = test_resume
     if delete_entry==None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'post with id: {id} Does not exist')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
 
     return {"data":"The Entry with id {id} was successfully deleted"}
 
@@ -183,22 +183,22 @@ def delete_entry(id:int):
 
 # -6-
 @app.put("/Entry/{id}")
-def update_entry(id:int, post:Post):
+def update_entry(id:int, resume:Resume):
     """
     """
     
     cursor.execute(""" UPDATE my_resume SET id = %s, title = %s, work_place = %s, skills = %s, time_of_work = %s WHERE id = %s returning * """,
-                   (post.id,post.title, post.work_place,post.skills,post.time_of_work, str(id)))
-    updated_post = cursor.fetchone()
+                   (resume.id,resume.title, resume.work_place,resume.skills,resume.time_of_work, str(id)))
+    updated_resume = cursor.fetchone()
     conn.commit()
     
-    if updated_post == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'post with id: {id} Does not exist')
+    if updated_resume == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
     
-    return{"data":updated_post}
+    return{"data":updated_resume}
     # To recap: this put function will look for an Id if it doesnt exist, it will throw a 404
-    # if it does exist, we will take the data from postman and turn it to a dictionary 
-    # then add the id to have it built in and replace the post with index with post_dict
+    # if it does exist, we will take the data from resumeman and turn it to a dictionary 
+    # then add the id to have it built in and replace the resume with index with resume_dict
     
 
 #SQL alchemy test ground
@@ -216,6 +216,6 @@ def test_resume(db: Session = Depends(get_db)):
     # the way to do it is
     #  db ogject and here we need to pass in the model, in our case its the resume in model file. (file.class)
     # since we want to query all the entries there we add a . all otherwise we could specify which one we want
-    posts = db.query(models.Resume).all()
+    resumes = db.query(models.Resume).all()
     
-    return {"data":posts}
+    return {"data":resumes}
