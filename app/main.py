@@ -1,16 +1,20 @@
 
+from multiprocessing import synchronize
+from telnetlib import SE
 from tkinter import Entry
 from turtle import title
 from fastapi import FastAPI 
 from fastapi import HTTPException, status, Depends
-from pydantic import BaseModel
+
 # importing psycopg2 to connect with the SQL database
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import  time
-from . import models
-from .db import SessionLocal, engine
+from . import models,schemas
+from .db import engine
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
+from app.db import get_db
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -20,27 +24,13 @@ app = FastAPI(
     docs_url= "/",
     title="Rony R. Shabo",
     description="BackEnd Python developer")
-    
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-        
         
 # importing Pydantic and adding this class, 
 # in addition to this refrencing this class in the resume call allows it to act like a template
 # giving all the warnings if resume call doesn't have the defined catigories, 
 # or not the correct data type
 
-class Resume(BaseModel):
-    # Defining the Schema "prone to be amended pending on DB"
-    id: int
-    title: str 
-    work_place: str
-    skills: str
-    time_of_work : str
+
 
 # here we are using the conn to establish a connection and the required arguments are important
 # this  is a bad example since the passwords and the host are just there with the code
@@ -112,35 +102,37 @@ def HTML_Source_code():
 def get_resume(db: Session = Depends(get_db)):
     """
     """
-    
+
     # # here  you use cursor.excute and pass in the SQL statment
     # cursor.execute(""" SELECT * FROM my_resume
     #                         ORDER BY id ASC""")
     # resume =cursor.fetchall()
-    resume = db.query(models.Resume).all()
+
+    resume = db.query(models.Model_Resume).all()
+    # To find the right way to order them 
     return resume
 
 
 #-3- Find By {id}
 @app.get("/Entry/{id}")
-def get_Entry_by_ID(id: int):
+def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     """
     """
     
-    cursor.execute(""" SELECT * from my_resume WHERE id= %s """, (str(id),))
-    entry_by_id = cursor.fetchone()
-    resume = entry_by_id
+    resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id).first()
+    print(resume)
     if not resume:
         print("Entry was not found")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST       ,
                             detail=f'Entry with id: {id} was not found'
                             )
-    return {"entry_detail": resume}
+    return  resume
 
 
 # -4- Add to DB with 
 @app.post("/Experiance", status_code=status.HTTP_201_CREATED)
-def create_entry(resume:Resume,db: Session = Depends(get_db)):
+# -------------------| here
+def create_entry(resume:schemas.ResumeCreate, db: Session = Depends(get_db)):
     """
     """
 
@@ -152,70 +144,49 @@ def create_entry(resume:Resume,db: Session = Depends(get_db)):
     # new_experiance = cursor.fetchone()
     # conn.commit()
 
-    new_experiance = models.Resume(id = resume.id, title = resume.title, work_place = resume.work_place, skills = resume.skills, time_of_work = resume.time_of_work)
-    
-    if new_experiance == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
+    # ** is unpacking the dict
+    new_experiance = models.Model_Resume(**resume.dict())
+    print(new_experiance)
     db.add(new_experiance)
     db.commit()
     db.refresh(new_experiance)
-    return {"data":new_experiance}
+    
+    if new_experiance == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
+    return new_experiance
 #title as str, content as str
 
 
 # -5-
 @app.delete("/Entry/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_entry(id:int):
+def delete_entry(id:int, db: Session = Depends(get_db)):
     """
     """
-    #find the index in the arry that has the required ID
-    cursor.execute(""" DELETE from my_resume WHERE id= %s returning * """, (str(id),))
-    delete_entry = cursor.fetchone()
-    conn.commit()
-    
+    resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
     # resume = test_resume
-    if delete_entry==None:
+    if resume.first() ==None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
 
+    resume.delete(synchronize_session = False)
+    db.commit()
     return {"data":"The Entry with id {id} was successfully deleted"}
 
 
 
 # -6-
 @app.put("/Entry/{id}")
-def update_entry(id:int, resume:Resume):
+def update_entry(id:int, updated_resumes:schemas.ResumeCreate, db: Session = Depends(get_db)):
     """
     """
-    
-    cursor.execute(""" UPDATE my_resume SET id = %s, title = %s, work_place = %s, skills = %s, time_of_work = %s WHERE id = %s returning * """,
-                   (resume.id,resume.title, resume.work_place,resume.skills,resume.time_of_work, str(id)))
-    updated_resume = cursor.fetchone()
-    conn.commit()
-    
-    if updated_resume == None:
+    updated_resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
+
+    resumes = updated_resume.first()
+
+    if resumes == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
     
-    return{"data":updated_resume}
-    # To recap: this put function will look for an Id if it doesnt exist, it will throw a 404
-    # if it does exist, we will take the data from resumeman and turn it to a dictionary 
-    # then add the id to have it built in and replace the resume with index with resume_dict
-    
+    updated_resume.update(updated_resumes.dict(), synchronize_session=False)
 
-#SQL alchemy test ground
-@app.get("/sql")
-def test_resume(db: Session = Depends(get_db)):
-    """_summary_
+    db.commit()
 
-    Args:
-        db (Session, optional): _description_. Defaults to Depends(get_db).
-
-    Returns:
-        _type_: _description_
-    """
-
-    # the way to do it is
-    #  db ogject and here we need to pass in the model, in our case its the resume in model file. (file.class)
-    # since we want to query all the entries there we add a . all otherwise we could specify which one we want
-    resumes = db.query(models.Resume).all()
-    
-    return {"data":resumes}
+    return updated_resume.first()

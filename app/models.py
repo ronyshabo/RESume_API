@@ -4,7 +4,7 @@ from .db import Base
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql.expression import text
 
-class Resume(Base):
+class Model_Resume(Base):
     __tablename__  = "my_resume"
     
     id = Column(Integer, primary_key = True, nullable = False )
