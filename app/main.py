@@ -5,9 +5,7 @@ from tkinter import Entry
 from turtle import title
 from fastapi import FastAPI 
 from fastapi import HTTPException, status, Depends
-
-# importing psycopg2 to connect with the SQL database
-import psycopg2
+import psycopg2 # importing psycopg2 to connect with the SQL database
 from psycopg2.extras import RealDictCursor
 import  time
 from . import models,schemas
@@ -15,6 +13,7 @@ from .db import engine
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from app.db import get_db
+# from fastapi.staticfiles import StaticFiles
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -24,29 +23,34 @@ app = FastAPI(
     docs_url= "/",
     title="Rony R. Shabo",
     description="BackEnd Python developer")
+
+# while True:
+#     try:
+#         conn = psycopg2.connect(host ="localhost", database='my_resume', 
+#                                 user='rony', password='Hell33174450$#',cursor_factory=RealDictCursor)
+#         cursor = conn.cursor()
+#         print("-----------database connection was successful------------------------")
+#         break
+#     except Exception as error:
+#         print(f"Connection to database failed due to {error} ")
+#         time.sleep(2)
         
-# importing Pydantic and adding this class, 
-# in addition to this refrencing this class in the resume call allows it to act like a template
-# giving all the warnings if resume call doesn't have the defined catigories, 
-# or not the correct data type
+# for find resume and find index resume, I probebly will delete the hard coded my_resume list of dicts
+# and change the source of entries to get it from the DB 
 
 
 
-# here we are using the conn to establish a connection and the required arguments are important
-# this  is a bad example since the passwords and the host are just there with the code
-# TODO for later
-while True:
-    try:
-        conn = psycopg2.connect(host ="localhost", database='my_resume', 
-                                user='rony', password='Hell33174450$#',cursor_factory=RealDictCursor)
-        cursor = conn.cursor()
-        print("-----------database connection was successful------------------------")
-        break
-    except Exception as error:
-        print(f"Connection to database failed due to {error} ")
-        time.sleep(2)
-        
-        
+# import os
+# # @app.get("/images")
+# def images():
+#     out = []
+#     for filename in os.listdir("./images"):
+#         out.append({
+#             "name": filename.split(".")[0],
+#             "path": "./images/" + filename
+#         })
+#     return out
+
 
 my_resumes = [{
              "id":1, 
@@ -82,11 +86,8 @@ def find_index_resume(id):
     for i, p in enumerate(my_resumes):
         if p['id'] ==id:
             return i
-    
-
 
 # -1-
-# Path worktime_of_works AKA route
 @app.get("/")
 def HTML_Source_code():
     """ Simply referenced to the ("/") directory that referes to the docs_url 
@@ -96,20 +97,24 @@ def HTML_Source_code():
     return
 
 
+# # Personal Image
+# app.mount("/static/images", StaticFiles(directory="static"), name="static")
+# @app.get("/static/images/Rony Shabo.jpg")
+# # @app.get("/static/images/image2.jpg")
+# def Images():
+    
+#     return
+
 
 #-2- Find all
-@app.get("/resume")
+@app.get("/Resume")
 def get_resume(db: Session = Depends(get_db)):
     """
+    purpose: get call for all entries in my resume, 
+    
+    returns: dict obj
     """
-
-    # # here  you use cursor.excute and pass in the SQL statment
-    # cursor.execute(""" SELECT * FROM my_resume
-    #                         ORDER BY id ASC""")
-    # resume =cursor.fetchall()
-
     resume = db.query(models.Model_Resume).all()
-    # To find the right way to order them 
     return resume
 
 
@@ -117,6 +122,9 @@ def get_resume(db: Session = Depends(get_db)):
 @app.get("/Entry/{id}")
 def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     """
+    purpose: find a sepecific entry by looking for a specific id that the user provides
+    
+    returns: a single dict object named an entry
     """
     
     resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id).first()
@@ -124,7 +132,7 @@ def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     if not resume:
         print("Entry was not found")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST       ,
-                            detail=f'Entry with id: {id} was not found'
+                            detail=f'Entry with id {id} was not found'
                             )
     return  resume
 
@@ -163,7 +171,6 @@ def delete_entry(id:int, db: Session = Depends(get_db)):
     """
     """
     resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
-    # resume = test_resume
     if resume.first() ==None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
 

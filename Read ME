@@ -14,3 +14,9 @@ To start make sure you set Up ssh correctly then clone the repo.
    
    Run Uvicorn locally using
    $uvicorn app.main:app --reload
+   
+   * this --reload flag helps your application update and run everytime you do a change, 
+  and it reflects directly to the API
+
+   keep in mind that main.py has been migrated to app directory
+   Hense the app.main:app command
