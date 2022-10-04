@@ -1,5 +1,4 @@
 
-from importlib.metadata import entry_points
 from turtle import title
 from fastapi import FastAPI 
 from fastapi import HTTPException, status, Depends
