@@ -1,13 +1,11 @@
 
-from multiprocessing import synchronize
-from telnetlib import SE
-from tkinter import Entry
+from importlib.metadata import entry_points
 from turtle import title
 from fastapi import FastAPI 
 from fastapi import HTTPException, status, Depends
 import psycopg2 # importing psycopg2 to connect with the SQL database
 from psycopg2.extras import RealDictCursor
-import  time
+from typing import Optional, List
 from . import models,schemas
 from .db import engine
 from sqlalchemy.orm import Session
@@ -107,7 +105,7 @@ def HTML_Source_code():
 
 
 #-2- Find all
-@app.get("/Resume")
+@app.get("/Resume",  response_model=List[schemas.FullResume])
 def get_resume(db: Session = Depends(get_db)):
     """
     purpose: get call for all entries in my resume, 
@@ -119,7 +117,7 @@ def get_resume(db: Session = Depends(get_db)):
 
 
 #-3- Find By {id}
-@app.get("/Entry/{id}")
+@app.get("/Entry/{id}", response_model=schemas.ResumeResponse)
 def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     """
     purpose: find a sepecific entry by looking for a specific id that the user provides
@@ -138,20 +136,11 @@ def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
 
 
 # -4- Add to DB with 
-@app.post("/Experiance", status_code=status.HTTP_201_CREATED)
-# -------------------| here
-def create_entry(resume:schemas.ResumeCreate, db: Session = Depends(get_db)):
+@app.post("/Experiance", status_code=status.HTTP_201_CREATED, response_model=schemas.ResumeResponse)
+def create_entry(resume: schemas.ResumeBase, db: Session = Depends(get_db)):
     """
     """
-
-    # ---- this is the original method using sql--------
-    # cursor.execute(""" INSERT INTO my_resume (id, title, work_place, skills, time_of_work) 
-    #                VALUES (%s,%s,%s,%s) RETURNING *
-    #                """, 
-    #                (resume.id, resume.title, resume.work_place, resume.skills),)
-    # new_experiance = cursor.fetchone()
-    # conn.commit()
-
+    
     # ** is unpacking the dict
     new_experiance = models.Model_Resume(**resume.dict())
     print(new_experiance)
@@ -181,8 +170,8 @@ def delete_entry(id:int, db: Session = Depends(get_db)):
 
 
 # -6-
-@app.put("/Entry/{id}")
-def update_entry(id:int, updated_resumes:schemas.ResumeCreate, db: Session = Depends(get_db)):
+@app.put("/Entry/{id}", response_model=schemas.PutResume)
+def update_entry(id:int, updated_resumes:schemas.PutResume, db: Session = Depends(get_db)):
     """
     """
     updated_resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
@@ -190,10 +179,21 @@ def update_entry(id:int, updated_resumes:schemas.ResumeCreate, db: Session = Dep
     resumes = updated_resume.first()
 
     if resumes == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Work Enty with id: {id} Does not exist')
     
     updated_resume.update(updated_resumes.dict(), synchronize_session=False)
 
     db.commit()
 
     return updated_resume.first()
+
+
+@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    new_user = models.User(**user.dict())
+    
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
