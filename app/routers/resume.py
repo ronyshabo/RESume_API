@@ -83,21 +83,6 @@ def create_entry(resume: schemas.ResumeBase, db: Session = Depends(get_db)):
 
 
 # -5-
-@router.delete("/Entry/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_entry(id:int, db: Session = Depends(get_db)):
-    """
-    """
-    resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
-    if resume.first() ==None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
-
-    resume.delete(synchronize_session = False)
-    db.commit()
-    return {"data":"The Entry with id {id} was successfully deleted"}
-
-
-
-# -6-
 @router.put("/Entry/{id}", response_model=schemas.PutResume)
 def update_entry(id:int, updated_resumes:schemas.PutResume, db: Session = Depends(get_db)):
     """
@@ -114,3 +99,18 @@ def update_entry(id:int, updated_resumes:schemas.PutResume, db: Session = Depend
     db.commit()
 
     return updated_resume.first()
+
+
+# -6-
+@router.delete("/Entry/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_entry(id:int, db: Session = Depends(get_db)):
+    """
+    """
+    resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
+    if resume.first() ==None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
+
+    resume.delete(synchronize_session = False)
+    db.commit()
+    return {"data":"The Entry with id {id} was successfully deleted"}
+

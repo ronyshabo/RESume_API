@@ -50,3 +50,7 @@ class UserOut(BaseModel):
     created_at: datetime
     class Config:
         orm_mode = True
+
+class UserLogin(BaseModel):
+    email: EmailStr
+    password: str

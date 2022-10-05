@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from app.db import get_db
 # from fastapi.staticfiles import StaticFiles
-from .routers import resume,user
+from .routers import resume,user, auth
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(           
@@ -58,3 +58,4 @@ def find_index_resume(id):
 
 app.include_router(resume.router)
 app.include_router(user.router)
+app.include_router(auth.router)
