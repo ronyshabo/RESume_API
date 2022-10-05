@@ -50,7 +50,11 @@ def get_resume(db: Session = Depends(get_db)):
 def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     """
     purpose: find a sepecific entry by looking for a specific id that the user provides
-    
+
+    dependncy :
+    - db session from fastAPI 
+        app = fastAPI()
+
     returns: a single dict object named an entry
     """
     
@@ -71,6 +75,19 @@ def create_entry(resume: schemas.ResumeBase,
                 user_id :int= Depends(oauth2.get_current_user)
  ):
     """
+    purpose: End point to fetch all entries in the Resume table.
+
+    dependncy :
+    - db session from fastAPI 
+        app = fastAPI()
+    - user ID: validation from Oauth2 and auth.py
+
+    returns:
+    full resume 
+    
+    Notes:
+    This function, would foce the user to be logged in first from the Oauth2 folder,
+
     """
     print(user_id)
     # ** is unpacking the dict
@@ -88,8 +105,16 @@ def create_entry(resume: schemas.ResumeBase,
 
 # -5-
 @router.put("/Entry/{id}", response_model=schemas.PutResume)
-def update_entry(id:int, updated_resumes:schemas.PutResume, db: Session = Depends(get_db)):
+def update_entry(id:int,title: str, work_place: str, time_of_work:str,skills:str,
+                updated_resumes:schemas.PutResume, 
+                db: Session = Depends(get_db), 
+                user_id :int= Depends(oauth2.get_current_user)
+            ):
     """
+     purpose: The ability to adjust the information in a specific Entry in the db
+
+     returns: the Entry located by (id)
+
     """
     updated_resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
 
@@ -107,7 +132,8 @@ def update_entry(id:int, updated_resumes:schemas.PutResume, db: Session = Depend
 
 # -6-
 @router.delete("/Entry/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_entry(id:int, db: Session = Depends(get_db)):
+def delete_entry(id:int, db: Session = Depends(get_db), 
+                user_id :int= Depends(oauth2.get_current_user)):
     """
     """
     resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)

@@ -24,6 +24,13 @@ def create_access_token(data:dict):
 
 
 def verify_access_token(token:str, credentials_exception):
+    """
+    Summary: 
+    Decode the token, we extract the Id from Payload otherwise Throw an Error
+
+    Returns:
+    Token Data: that is the ID
+    """
     try:
         payload=jwt.decode(token,SECRET_KEY, algorithms=[ALGORITHM])
         id:str = payload.get("user_id")
@@ -37,5 +44,17 @@ def verify_access_token(token:str, credentials_exception):
     return token_data
 
 def get_current_user(token: str = Depends(oausth2_scheme)):
-    credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Couldn't validate Credentials", headers={"WWW-Authentiacte":"Bearer"})
+    """
+    summary:
+    a function to varify the access token by passing the token taken from the User
+
+    Returns:
+        _type_: token object 
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED, 
+        detail=f"Couldn't validate Credentials", 
+        headers={"WWW-Authentiacte":"Bearer"}
+        )
+
     return verify_access_token(token, credentials_exception)
