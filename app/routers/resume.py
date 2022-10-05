@@ -1,6 +1,7 @@
 
+from app import oauth2
 from app.db import get_db
-from .. import models, schemas
+from .. import models, schemas, oauth2
 from fastapi import status, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from .. db import get_db
@@ -65,10 +66,13 @@ def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
 
 # -4- Add to DB with 
 @router.post("/Experiance", status_code=status.HTTP_201_CREATED, response_model=schemas.ResumeResponse)
-def create_entry(resume: schemas.ResumeBase, db: Session = Depends(get_db)):
+def create_entry(resume: schemas.ResumeBase,
+                db: Session = Depends(get_db), 
+                user_id :int= Depends(oauth2.get_current_user)
+ ):
     """
     """
-    
+    print(user_id)
     # ** is unpacking the dict
     new_experiance = models.Model_Resume(**resume.dict())
     print(new_experiance)
