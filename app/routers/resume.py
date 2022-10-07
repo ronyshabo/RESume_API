@@ -35,13 +35,16 @@ def HTML_Source_code():
 
 #-2- Find all
 @router.get("/Resume",response_model=List[schemas.FullResume])
-def get_resume(db: Session = Depends(get_db)):
+def get_resume(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     """
     purpose: get call for all entries in my resume, 
     
     returns: dict obj
     """
-    resume = db.query(models.Model_Resume).all()
+
+    resume1 = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 8).all()
+    resume2 = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == current_user.id).all()
+    resume = resume1 + resume2
     return resume
 
 
