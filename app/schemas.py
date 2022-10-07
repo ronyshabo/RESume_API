@@ -24,17 +24,21 @@ class CreateResume(ResumeBase):
 class FullResume(ResumeBase):
     id: int
     created_at :datetime
+    owner_id: int
+
     class Config:
         orm_mode = True
 
 class ResumeResponse(ResumeBase):
     created_at : datetime
+    owner_id: int
     
     class Config:
         orm_mode = True
 
 class PutResume(ResumeBase):
     id:int
+    owner_id: int
     
     class Config:
         orm_mode = True

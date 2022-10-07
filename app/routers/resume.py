@@ -34,7 +34,7 @@ def HTML_Source_code():
 
 
 #-2- Find all
-@router.get("/Resume",  response_model=List[schemas.FullResume])
+@router.get("/Resume",response_model=List[schemas.FullResume])
 def get_resume(db: Session = Depends(get_db)):
     """
     purpose: get call for all entries in my resume, 
@@ -72,7 +72,7 @@ def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
 @router.post("/Experiance", status_code=status.HTTP_201_CREATED, response_model=schemas.ResumeResponse)
 def create_entry(resume: schemas.ResumeBase,
                 db: Session = Depends(get_db), 
-                user_id :int= Depends(oauth2.get_current_user)
+                current_user :int= Depends(oauth2.get_current_user)
  ):
     """
     purpose: End point to fetch all entries in the Resume table.
@@ -89,10 +89,9 @@ def create_entry(resume: schemas.ResumeBase,
     This function, would foce the user to be logged in first from the Oauth2 folder,
 
     """
-    print(user_id)
+    print(current_user.email)
     # ** is unpacking the dict
-    new_experiance = models.Model_Resume(**resume.dict())
-    print(new_experiance)
+    new_experiance = models.Model_Resume(owner_id = current_user.id,**resume.dict())
     db.add(new_experiance)
     db.commit()
     db.refresh(new_experiance)
@@ -105,10 +104,9 @@ def create_entry(resume: schemas.ResumeBase,
 
 # -5-
 @router.put("/Entry/{id}", response_model=schemas.PutResume)
-def update_entry(id:int,title: str, work_place: str, time_of_work:str,skills:str,
-                updated_resumes:schemas.PutResume, 
+def update_entry(id:int, updated_resumes:schemas.PutResume, 
                 db: Session = Depends(get_db), 
-                user_id :int= Depends(oauth2.get_current_user)
+                current_user :int= Depends(oauth2.get_current_user)
             ):
     """
      purpose: The ability to adjust the information in a specific Entry in the db
@@ -133,14 +131,17 @@ def update_entry(id:int,title: str, work_place: str, time_of_work:str,skills:str
 # -6-
 @router.delete("/Entry/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_entry(id:int, db: Session = Depends(get_db), 
-                user_id :int= Depends(oauth2.get_current_user)):
+                current_user :int= Depends(oauth2.get_current_user)):
     """
     """
-    resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
-    if resume.first() ==None:
+    resume_query = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
+    resume = resume_query.first()
+    if resume ==None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
 
-    resume.delete(synchronize_session = False)
+    if resume.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    resume_query.delete(synchronize_session = False)
     db.commit()
     return {"data":"The Entry with id {id} was successfully deleted"}
 

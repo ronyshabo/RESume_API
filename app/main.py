@@ -1,15 +1,7 @@
 
-from turtle import title
 from fastapi import FastAPI 
-from fastapi import HTTPException, status, Depends
-import psycopg2 # importing psycopg2 to connect with the SQL database
-from psycopg2.extras import RealDictCursor
-from typing import Optional, List
-from . import models,schemas, utils
+from . import models
 from .db import engine
-from sqlalchemy.orm import Session
-from sqlalchemy import desc
-from app.db import get_db
 # from fastapi.staticfiles import StaticFiles
 from .routers import resume,user, auth
 models.Base.metadata.create_all(bind=engine)
