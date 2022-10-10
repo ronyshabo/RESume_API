@@ -1,28 +1,22 @@
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-
+from .config import settings
 from app import models
 from . import schemas, db   
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+from .config import settings
 
 oausth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
-# Secret key
-# Algo
-#  Experation time
-
-SECRET_KEY = "A614z772X8409w742V611W118"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINS = 30
 
 def create_access_token(data:dict):
     to_encode = data.copy()
 
-    expire = datetime.utcnow() + timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINS)
+    expire = datetime.utcnow() + timedelta(minutes = settings.access_token_expire_time)
     to_encode.update({"exp":expire})
 
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
     return encoded_jwt
 
 
@@ -35,7 +29,7 @@ def verify_access_token(token:str, credentials_exception):
     Token Data: that is the ID
     """
     try:
-        payload=jwt.decode(token,SECRET_KEY, algorithms=[ALGORITHM])
+        payload=jwt.decode(token,settings.secret_key, algorithms=[settings.algorithm])
         id:str = payload.get("user_id")
         if id is None:
             raise credentials_exception
@@ -46,7 +40,7 @@ def verify_access_token(token:str, credentials_exception):
 
     return token_data
 
-def get_current_user(token: str = Depends(oausth2_scheme), db: Session = Depends(db.get_db)):
+def get_current_user(token_data: str = Depends(oausth2_scheme), db: Session = Depends(db.get_db)):
     """
     summary:
     a function to varify the access token by passing the token taken from the User
@@ -60,6 +54,6 @@ def get_current_user(token: str = Depends(oausth2_scheme), db: Session = Depends
         headers={"WWW-Authentiacte":"Bearer"}
         )
 
-    token = verify_access_token(token, credentials_exception)
-    user = db.query(models.User).filter(models.User.id == token.id).first()
+    token_data = verify_access_token(token_data, credentials_exception)
+    user = db.query(models.User).filter(models.User.id == token_data.id).first()
     return user

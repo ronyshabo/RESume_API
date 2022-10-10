@@ -9,7 +9,7 @@ lib/**
 **/pip-selfcheck.json
 **/secrets.py
 .coverage
-
+.env
 
 __pycache__
 readme.txt
