@@ -5,7 +5,7 @@ from .. import models, schemas, oauth2
 from fastapi import status, Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 from .. db import get_db
-from typing import Optional, List
+from typing import List
 
 router = APIRouter(
     prefix="/resume",
@@ -65,7 +65,7 @@ def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     print(resume)
     if not resume:
         print("Entry was not found")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST       ,
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f'Entry with id {id} was not found'
                             )
     return  resume
@@ -92,8 +92,9 @@ def create_entry(resume: schemas.ResumeBase,
     This function, would foce the user to be logged in first from the Oauth2 folder,
 
     """
-    print(current_user.email)
+
     # ** is unpacking the dict
+    print(current_user.id)
     new_experiance = models.Model_Resume(owner_id = current_user.id,**resume.dict())
     db.add(new_experiance)
     db.commit()

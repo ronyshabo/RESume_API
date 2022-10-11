@@ -1,6 +1,6 @@
 from app.db import get_db
 from .. import models, schemas,utils
-from fastapi import status, Depends, APIRouter
+from fastapi import status, Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
 
@@ -17,7 +17,10 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     and you can use those logins to log in again even if you used it here only
     '''
-        # Hash the password -user.password
+    # -1- created  the hashed version of pwad when createing the user
+        #  this will link to utils and hash the password
+
+    # Hash the password that is retrieved from user.password
     hased_password = utils.hash(user.password)
     user.password = hased_password
 
@@ -28,3 +31,11 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+@router.get("/user/{id}",response_model = schemas.UserOut)
+def get_user(id: int,db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first() 
+
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details=f"User with id {id} not found")
+    return user
