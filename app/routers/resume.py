@@ -14,14 +14,14 @@ router = APIRouter(
 
 
 
-# -1-
-@router.get("/")
-def HTML_Source_code():
-    """ Simply referenced to the ("/") directory that referes to the docs_url 
-    which is an argument for the fast API implementation Line 13
+# # -a-
+# @router.get("/")
+# def HTML_Source_code():
+#     """ Simply referenced to the ("/") directory that referes to the docs_url 
+#     which is an argument for the fast API implementation Line 13
     
-    Please Use the try it out button then Execute"""
-    return
+#     Please Use the try it out button then Execute"""
+#     return
 
 
 # # Personal Image
@@ -33,7 +33,7 @@ def HTML_Source_code():
 #     return
 
 
-#-2- Find all
+#-1- Find all
 @router.get("/Resume",response_model=List[schemas.FullResume])
 def get_resume(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     """
@@ -41,14 +41,13 @@ def get_resume(db: Session = Depends(get_db), current_user: int = Depends(oauth2
     
     returns: dict obj
     """
-
     resume1 = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 8).all()
-    resume2 = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == current_user.id).all()
+    resume2 = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == current_user).all()
     resume = resume1 + resume2
     return resume
 
 
-#-3- Find By {id}
+#-2- Find By {id}
 @router.get("/Entry/{id}", response_model=schemas.ResumeResponse)
 def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     """
@@ -71,7 +70,7 @@ def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     return  resume
 
 
-# -4- Add to DB with 
+# -3- Add to DB with 
 @router.post("/Experiance", status_code=status.HTTP_201_CREATED, response_model=schemas.ResumeResponse)
 def create_entry(resume: schemas.ResumeBase,
                 db: Session = Depends(get_db), 
@@ -106,7 +105,7 @@ def create_entry(resume: schemas.ResumeBase,
 #title as str, content as str
 
 
-# -5-
+# -4-
 @router.put("/Entry/{id}", response_model=schemas.PutResume)
 def update_entry(id:int, updated_resumes:schemas.PutResume, 
                 db: Session = Depends(get_db), 
@@ -132,7 +131,7 @@ def update_entry(id:int, updated_resumes:schemas.PutResume,
     return updated_resume.first()
 
 
-# -6-
+# -5-
 @router.delete("/Entry/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_entry(id:int, db: Session = Depends(get_db), 
                 current_user :int= Depends(oauth2.get_current_user)):

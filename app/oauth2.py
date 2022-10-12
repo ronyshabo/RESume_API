@@ -48,12 +48,11 @@ def get_current_user(token_data: str = Depends(oausth2_scheme), db: Session = De
     Returns:
         _type_: token object 
     """
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, 
-        detail=f"Couldn't validate Credentials", 
-        headers={"WWW-Authentiacte":"Bearer"}
+    credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Couldn't validate Credentials", headers={"WWW-Authentiacte":"Bearer"}
         )
 
     token_data = verify_access_token(token_data, credentials_exception)
     user = db.query(models.User).filter(models.User.id == token_data.id).first()
+    print("----we are out of verify access token")
+    print("---------end get current user -------------")
     return user
