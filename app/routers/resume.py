@@ -35,17 +35,26 @@ router = APIRouter(
 
 #-1- Find all
 @router.get("/Resume",response_model=List[schemas.FullResume])
-def get_resume(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+def get_resume(db: Session = Depends(get_db),current_user :int= Depends(oauth2.get_current_user)):
     """
     purpose: get call for all entries in my resume, 
     
     returns: dict obj
     """
-    resume1 = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 8).all()
-    resume2 = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == current_user).all()
-    resume = resume1 + resume2
-    return resume
 
+    # -----------------Working solution
+    # resume = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 23).all()
+    # return resume
+
+    current_user_id = current_user.id
+    print(f"Current user ID:{current_user_id}")
+
+    session_owner_list = db.query(models.Model_Resume.owner_id).first()
+    print(f"Here is a list of all Session Ids {session_owner_list}")
+
+    
+    
+    return 
 
 #-2- Find By {id}
 @router.get("/Entry/{id}", response_model=schemas.ResumeResponse)

@@ -20,6 +20,12 @@ class ResumeBase(BaseModel):
 class CreateResume(ResumeBase):
     id: int
 
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: datetime
+    class Config:
+        orm_mode = True
 
 class FullResume(ResumeBase):
     id: int
@@ -49,13 +55,6 @@ class UserCreate(BaseModel):
     password:str
    
 
-class UserOut(BaseModel):
-    id: int
-    email: EmailStr
-    created_at: datetime
-    class Config:
-        orm_mode = True
-
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
@@ -65,4 +64,4 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    id: Optional[str]= None
+    id: int

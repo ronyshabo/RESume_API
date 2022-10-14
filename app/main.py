@@ -4,7 +4,7 @@ from . import models
 from .db import engine
 # from fastapi.staticfiles import StaticFiles
 from .routers import resume,user, auth
-from .config import *
+from .config import settings
 
 models.Base.metadata.create_all(bind=engine)
 
