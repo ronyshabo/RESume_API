@@ -24,6 +24,7 @@ class UserOut(BaseModel):
     id: int
     email: EmailStr
     created_at: datetime
+    
     class Config:
         orm_mode = True
 
@@ -43,9 +44,7 @@ class ResumeResponse(ResumeBase):
         orm_mode = True
 
 class PutResume(ResumeBase):
-    id:int
-    owner_id: int
-    
+
     class Config:
         orm_mode = True
 

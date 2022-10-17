@@ -10,15 +10,13 @@ router = APIRouter(
 )
 
 @router.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate,db: Session = Depends(get_db)):
     '''
     You can add any number of users with a working password.
     The password then hashed and Saved
 
-    and you can use those logins to log in again even if you used it here only
+    and you can use those logins to log in again
     '''
-    # -1- created  the hashed version of pwad when createing the user
-        #  this will link to utils and hash the password
 
     # Hash the password that is retrieved from user.password
     hased_password = utils.hash(user.password)
@@ -34,8 +32,11 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @router.get("/user/{id}",response_model = schemas.UserOut)
 def get_user(id: int,db: Session = Depends(get_db)):
+    '''
+    Get call to see the User basic information
+    '''
     user = db.query(models.User).filter(models.User.id == id).first() 
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details=f"User with id {id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
     return user

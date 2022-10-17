@@ -20,3 +20,15 @@ To start make sure you set Up ssh correctly then clone the repo.
 
    keep in mind that main.py has been migrated to app directory
    Hense the app.main:app command
+
+3- setup a .env file inside your API directory. and provice the following values
+   DB_HOSTNAME=
+   DB_PORT= 
+   DB_PASSWORD= 
+   DB_NAME=
+   DB_USERNAME="by default postgress sets it as postgress"
+   SECRET_KEY=find a secret Key and this would be yours to keep secure
+   ALGORITHM="Type of Algorithm yiou would prefer to you. HS256 is my personal choice"
+   ACCESS_TOKEN_EXPIRE_TIME="Per Minutes","This will decide how many mins the session for each log in"
+
+4-

@@ -1,4 +1,5 @@
 
+from typing import Optional
 from app import oauth2
 from app.db import get_db
 from .. import models, schemas, oauth2
@@ -37,6 +38,10 @@ router = APIRouter(
 @router.get("/Resume",response_model=List[schemas.FullResume])
 def get_resume(db: Session = Depends(get_db),current_user :int= Depends(oauth2.get_current_user)):
     """
+    describtion: This call will initially show you My full resume, 
+        you will be able to add new entries to it. and will be viewing both my entries, 
+        and everything you do as well
+
     purpose: get call for all entries in my resume, 
     
     returns: dict obj
@@ -49,12 +54,10 @@ def get_resume(db: Session = Depends(get_db),current_user :int= Depends(oauth2.g
     current_user_id = current_user.id
     print(f"Current user ID:{current_user_id}")
 
-    session_owner_list = db.query(models.Model_Resume.owner_id).first()
-    print(f"Here is a list of all Session Ids {session_owner_list}")
-
-    
-    
-    return 
+    curr_user_posts = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == current_user_id).all() 
+    admin_posts =  db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 1).all()
+    resume = admin_posts +  curr_user_posts
+    return resume
 
 #-2- Find By {id}
 @router.get("/Entry/{id}", response_model=schemas.ResumeResponse)
@@ -152,7 +155,7 @@ def delete_entry(id:int, db: Session = Depends(get_db),
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
 
     if resume.owner_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="You are not authorized to Delete this Entry")
     resume_query.delete(synchronize_session = False)
     db.commit()
     return {"data":"The Entry with id {id} was successfully deleted"}

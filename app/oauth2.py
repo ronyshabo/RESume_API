@@ -62,5 +62,5 @@ def get_current_user(token_data: str = Depends(oausth2_scheme), db: Session = De
     user = db.query(models.User).filter(models.User.id == token_data).first()
     
     # print(f"Token Data is: {token_data}")
-    # print(f"User in get current user is {user}")
+    print(f"User in get current user is {user}")
     return user
