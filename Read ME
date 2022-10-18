@@ -1,10 +1,12 @@
 Welcome to my first full standalone project.
-I will demonstrate the API I am building using FastAPI 
+I will demonstrate the fully functioning API I am building using FastAPI 
 in addition I am connecting it to SQLalchecmy database
 
 To start make sure you set Up ssh correctly then clone the repo.
+Most importantly don't forget to CD into the correct directory.
 1- make sure you have the venv initalized then activated
    $ pip install virtualenv
+   $ python3 -m venv api_venv
 
    I used api_venv as a name and so activating it becomes:
    $ source api_venv/scripts/activate
@@ -22,13 +24,17 @@ To start make sure you set Up ssh correctly then clone the repo.
    Hense the app.main:app command
 
 3- setup a .env file inside your API directory. and provice the following values
+   Those variables will be migrating to SQLALCHEMY_DATABASE_URL in db.py .However,
+   these vairables will be going through config.py first to be checked and verified
    DB_HOSTNAME=
    DB_PORT= 
    DB_PASSWORD= 
    DB_NAME=
    DB_USERNAME="by default postgress sets it as postgress"
+   
    SECRET_KEY=find a secret Key and this would be yours to keep secure
-   ALGORITHM="Type of Algorithm yiou would prefer to you. HS256 is my personal choice"
+   ALGORITHM="Type of Algorithm you would prefer to you. HS256 is my personal choice"
    ACCESS_TOKEN_EXPIRE_TIME="Per Minutes","This will decide how many mins the session for each log in"
 
-4-
+4- Dependencies will be available after 
+   $ pip install requirements.txt

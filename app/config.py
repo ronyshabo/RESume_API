@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_time: int
     
+    #pydantic model class to reference .env file
     class Config:
         env_file  = ".env"
 

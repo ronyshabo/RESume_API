@@ -1,12 +1,5 @@
 from datetime import datetime
-from typing import Optional
 from pydantic import BaseModel, EmailStr
-
-from app.db import Base
-from app.models import Model_Resume
-
-
-    # Defining the Schema "prone to be amended pending on DB"
 
 
 class ResumeBase(BaseModel):
@@ -25,6 +18,7 @@ class UserOut(BaseModel):
     email: EmailStr
     created_at: datetime
     
+    #pydantic model to reference the orm and activate it
     class Config:
         orm_mode = True
 
@@ -33,6 +27,7 @@ class FullResume(ResumeBase):
     created_at :datetime
     owner_id: int
 
+    #pydantic model to reference the orm and activate it
     class Config:
         orm_mode = True
 
@@ -40,11 +35,12 @@ class ResumeResponse(ResumeBase):
     created_at : datetime
     owner_id: int
     
+    #pydantic model to reference the orm and activate it
     class Config:
         orm_mode = True
 
 class PutResume(ResumeBase):
-
+    #pydantic model to reference the orm and activate it
     class Config:
         orm_mode = True
 
