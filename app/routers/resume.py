@@ -36,7 +36,7 @@ router = APIRouter(
 
 #-1- Find all
 @router.get("/Resume",response_model=List[schemas.FullResume])
-def get_resume(db: Session = Depends(get_db),current_user :int= Depends(oauth2.get_current_user)):
+def get_resume(db: Session = Depends(get_db),current_user:int= Depends(oauth2.get_current_user)):
     """
     describtion: This call will initially show you My full resume, 
         you will be able to add new entries to it. and will be viewing both my entries, 
@@ -47,12 +47,7 @@ def get_resume(db: Session = Depends(get_db),current_user :int= Depends(oauth2.g
     returns: dict obj
     """
 
-    # -----------------Working solution
-    # resume = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 23).all()
-    # return resume
-
-    current_user_id = current_user.id
-    print(f"Current user ID:{current_user_id}")
+    current_user_id = current_user.id  # type: ignore
 
     curr_user_posts = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == current_user_id).all() 
     admin_posts =  db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 1).all()
@@ -73,7 +68,6 @@ def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     """
     
     resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id).first()
-    print(resume)
     if not resume:
         print("Entry was not found")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -96,17 +90,15 @@ def create_entry(resume: schemas.ResumeBase,
         app = fastAPI()
     - user ID: validation from Oauth2 and auth.py
 
-    returns:
+    Returns:
     full resume 
     
     Notes:
     This function, would foce the user to be logged in first from the Oauth2 folder,
 
     """
-
     # ** is unpacking the dict
-    print(current_user.id)
-    new_experiance = models.Model_Resume(owner_id = current_user.id,**resume.dict())
+    new_experiance = models.Model_Resume(owner_id = current_user.id,**resume.dict())  # type: ignore
     db.add(new_experiance)
     db.commit()
     db.refresh(new_experiance)
@@ -126,7 +118,9 @@ def update_entry(id:int, updated_resumes:schemas.PutResume,
     """
      purpose: The ability to adjust the information in a specific Entry in the db
 
-     returns: the Entry located by (id)
+     Returns: the Entry located by (id)
+
+     Dependency: This endpoint requires the correct log in and the correct authentications
 
     """
     updated_resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
@@ -135,7 +129,9 @@ def update_entry(id:int, updated_resumes:schemas.PutResume,
 
     if resumes == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Work Enty with id: {id} Does not exist')
-    
+    if resumes.owner_id != current_user.id: # type: ignore
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="You are not authorized to Delete this Entry")
+
     updated_resume.update(updated_resumes.dict(), synchronize_session=False)
 
     db.commit()
@@ -148,15 +144,19 @@ def update_entry(id:int, updated_resumes:schemas.PutResume,
 def delete_entry(id:int, db: Session = Depends(get_db), 
                 current_user :int= Depends(oauth2.get_current_user)):
     """
+    Purpose: The ability to Delete an entry the user has already entered
+
+    Returns: Either a confermation of the Deletion or an error message that the Id requested was not found
+    
+    Dependency: This endpoint requires the correct log in and the correct authentications
     """
     resume_query = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
     resume = resume_query.first()
     if resume ==None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'resume with id: {id} Does not exist')
 
-    if resume.owner_id != current_user.id:
+    if resume.owner_id != current_user.id: # type: ignore
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail="You are not authorized to Delete this Entry")
     resume_query.delete(synchronize_session = False)
     db.commit()
     return {"data":"The Entry with id {id} was successfully deleted"}
-

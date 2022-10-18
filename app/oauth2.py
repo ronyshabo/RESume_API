@@ -36,14 +36,13 @@ def verify_access_token(token:str, credentials_exception):
     """
     try:
         payload=jwt.decode(token,SECRET_KEY, algorithms=[ALGORITHM])
-        id:str = payload.get("user_id")
+        id:str = payload.get("user_id")  # type: ignore
         if id is None:
             raise credentials_exception
 
-        token_data = schemas.TokenData.id=id
+        token_data = schemas.TokenData.id=id  # type: ignore
     except JWTError:
         raise credentials_exception
-
     return token_data
 
 def get_current_user(token_data: str = Depends(oausth2_scheme), db: Session = Depends(db.get_db)):
@@ -57,10 +56,7 @@ def get_current_user(token_data: str = Depends(oausth2_scheme), db: Session = De
 
     credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Couldn't validate Credentials", headers={"WWW-Authentiacte":"Bearer"}
         )
-
     token_data = verify_access_token(token_data, credentials_exception)
     user = db.query(models.User).filter(models.User.id == token_data).first()
     
-    # print(f"Token Data is: {token_data}")
-    print(f"User in get current user is {user}")
     return user
