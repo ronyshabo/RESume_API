@@ -1,12 +1,12 @@
 
 from fastapi import FastAPI 
-from . import models
-from .db import engine
 # from fastapi.staticfiles import StaticFiles
 from .routers import resume,user, auth
-from .config import settings
+from fastapi.middleware.cors import CORSMiddleware
 
-models.Base.metadata.create_all(bind=engine)
+
+# This command is not needed anymore since it was allowing run create statments for sqlalchemy.
+# models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(           
     version= "614-772-8409",
@@ -21,7 +21,14 @@ app = FastAPI(
         3- Enter your email and password only in the green Authorize button to the right of the page
         4- Explore it yourself, and most of all enjoy your time my friend
     """)
+origins=["*"]
 
+app.add_middleware(CORSMiddleware,
+allow_origins=origins,
+allow_credentials=True,
+allow_methods=["*"],
+allow_headers=["*"],
+)
 
 app.include_router(resume.router)
 app.include_router(user.router)

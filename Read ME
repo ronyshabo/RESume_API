@@ -16,11 +16,13 @@ Most importantly don't forget to CD into the correct directory.
    
 2- Dependencies will be available after 
    $ pip install -r requirements.txt
+   - I personally had problems with dateutil when working on alembic
+   $ pip install python-dateutil --upgrade
 
 3- setup a .env file inside your API directory. and provice the following values
    Those variables will be migrating to SQLALCHEMY_DATABASE_URL in db.py .However,
    these vairables will be going through config.py first to be checked and verified
-   DB_HOSTNAME=
+   DB_HOSTNAME=localhost
    DB_PORT= 
    DB_PASSWORD= 
    DB_NAME=
