@@ -5,7 +5,7 @@ from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.sql.expression import text
 
 class Model_Resume(Base):
-    __tablename__  = "my_resume"
+    __tablename__  = "resume"
     
     id = Column(Integer,primary_key=True,nullable=False,autoincrement=True)
     title = Column(String,nullable=False)
