@@ -30,5 +30,7 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    op.drop_table('users_subtype')
+    op.drop_constraint('id')
     op.drop_table('users')
     pass
