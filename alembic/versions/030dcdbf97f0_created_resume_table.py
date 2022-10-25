@@ -17,7 +17,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.create_table('resume',
+    op.create_table('my_resume',
         sa.Column('id',sa.String(),nullable=False,autoincrement=True),
         sa.Column('title',sa.String(),nullable=False),
         sa.Column('work_place',sa.String(),nullable=False),
