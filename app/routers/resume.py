@@ -145,7 +145,7 @@ def update_entry(id:int, updated_resumes:schemas.PutResume,
 def delete_entry(id:int, db: Session = Depends(get_db), 
                 current_user :int= Depends(oauth2.get_current_user)):
     """
-    Purpose: The ability to Delete an entry the user has already entered
+    Purpose: The ability to Delete an entry that you have entred. No worries it won't delete anything I created.
 
     Returns: Either a confermation of the Deletion or an error message that the Id requested was not found
     

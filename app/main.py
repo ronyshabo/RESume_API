@@ -17,8 +17,7 @@ app = FastAPI(
     Source Code:        https://github.com/ronyshabo/RESume_API
     Email:              ronyshabbo@gmail.com
 
-    Welcome to my first API, I used my Resume as an example of the things I can perform 
-    in order to be able to view my resume I encurage you to:
+    Welcome to my first API, I used my Resume as an example of the things I can perform; in order to be able to view my resume I encurage you to:
         1- Please start by creating a user with the POST command under Users.
         2- Authenticate your user "Log in" in the last endpoint. 
         3- Enter only your email and password in the green Authorize button to the right of the page
