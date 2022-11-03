@@ -21,11 +21,11 @@ app = FastAPI(
     in order to be able to view my resume I encurage you to:
         1- Please start by creating a user with the POST command under Users.
         2- Authenticate your user "Log in" in the last endpoint. 
-        3- Enter only your email and password in the green Authorize button to the right of the page \
-        4- My changes are locked and nothing you do would change anything other users did.            \
-        5- Explore it yourself, and most of all enjoy your time my friend                              \
-        One last thing.                                                                                 \
-        6- Any changes you create would be added under your credentials.                                 ---->
+        3- Enter only your email and password in the green Authorize button to the right of the page
+        4- My changes are locked and nothing you do would change anything other users did.
+        5- Explore it yourself, and most of all enjoy your time my friend
+        One last thing.
+        6- Any changes you create would be added under your credentials.
            so you will only be able to change / delete your entries. 
     """)
 origins=["*"]
