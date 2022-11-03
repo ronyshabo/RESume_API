@@ -51,7 +51,7 @@ def get_resume(db: Session = Depends(get_db),current_user:int= Depends(oauth2.ge
     print(f"current_user_id = current_user.id is{current_user_id} = {current_user.id}")
 
     curr_user_posts = db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == current_user_id).all() 
-    admin_posts =  db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 1).all()
+    admin_posts =  db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 3).all()
     resume = admin_posts +  curr_user_posts
     return resume
 
