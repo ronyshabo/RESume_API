@@ -44,7 +44,7 @@ def get_resume(db: Session = Depends(get_db),current_user:int= Depends(oauth2.ge
 
     purpose: get call for all entries in my resume, 
     
-    returns: dict obj
+    returns: dictionary obj
     """
 
     current_user_id = current_user.id  # type: ignore
@@ -59,13 +59,13 @@ def get_resume(db: Session = Depends(get_db),current_user:int= Depends(oauth2.ge
 @router.get("/Entry/{id}", response_model=schemas.ResumeResponse)
 def get_Entry_by_ID(id: int, db:Session = Depends(get_db)):
     """
-    purpose: find a sepecific entry by looking for a specific id that the user provides
+    purpose: find a sepecific entry by fetching a specific id that the user provides
 
     dependncy :
     - db session from fastAPI 
         app = fastAPI()
 
-    returns: a single dict object named an entry
+    returns: a single dictionary object 
     """
     
     resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id).first()
@@ -84,18 +84,12 @@ def create_entry(resume: schemas.ResumeBase,
                 current_user :int= Depends(oauth2.get_current_user)
  ):
     """
-    purpose: End point to fetch all entries in the Resume table.
+    purpose: End point to create an entries in the Resume table.
 
     dependncy :
     - db session from fastAPI 
         app = fastAPI()
     - user ID: validation from Oauth2 and auth.py
-
-    Returns:
-    full resume 
-    
-    Notes:
-    This function, would foce the user to be logged in first from the Oauth2 folder,
 
     """
     # ** is unpacking the dict
@@ -117,9 +111,9 @@ def update_entry(id:int, updated_resumes:schemas.PutResume,
                 current_user :int= Depends(oauth2.get_current_user)
             ):
     """
-     purpose: The ability to adjust the information in a specific Entry in the db
+     purpose: The ability to amend the information in a specific Entry in the db
 
-     Returns: the Entry located by (id)
+     Returns: the updated Entry located by (id)
 
      Dependency: This endpoint requires the correct log in and the correct authentications
 
@@ -147,9 +141,9 @@ def delete_entry(id:int, db: Session = Depends(get_db),
     """
     Purpose: The ability to Delete an entry that you have entred. No worries it won't delete anything I created.
 
-    Returns: Either a confermation of the Deletion or an error message that the Id requested was not found
+    Returns: Either a confirmation of the Deletion or an error message that the Id requested was not found
     
-    Dependency: This endpoint requires the correct log in and the correct authentications
+    Dependency: This endpoint requires the correct log in and authentication, requires an ID for a post to be deleted
     """
     resume_query = db.query(models.Model_Resume).filter(models.Model_Resume.id == id)
     resume = resume_query.first()
