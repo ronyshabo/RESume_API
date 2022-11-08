@@ -8,8 +8,3 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2.5.0
-      - name: Black Lint
-        uses: jose-lpa/python-black-check-action@master
-        with:
-          path: '.'
-          line-length: 80
