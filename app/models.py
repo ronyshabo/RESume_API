@@ -7,7 +7,6 @@ from sqlalchemy.sql.expression import text
 
 class Model_Resume(Base):
     __tablename__ = "resume"
-
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     title = Column(String, nullable=False)
     work_place = Column(String, nullable=False)
@@ -26,7 +25,6 @@ class Model_Resume(Base):
 
 class User(Base):
     __tablename__ = "users"
-
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)

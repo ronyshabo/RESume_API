@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from .. import db, schemas, models, utils, oauth2
 
-
 router = APIRouter(tags=["Authentication"])
 
 
@@ -19,7 +18,6 @@ def login(
     return:
     Access_Token / Bearer
     """
-
     user = (
         db.query(models.User)
         .filter(models.User.email == user_credentials.username)

@@ -17,7 +17,6 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
     and you can use those logins to log in again
     """
-
     # Hash the password that is retrieved from user.password
     hased_password = utils.hash(user.password)
     user.password = hased_password

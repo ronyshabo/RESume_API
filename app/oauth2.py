@@ -11,7 +11,6 @@ from .config import settings
 oausth2_scheme = OAuth2PasswordBearer(tokenUrl="Login")
 # Here we have the class is not picking up the Authoriziation, for the BEarer of that Token
 # check with Spenser.
-
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
 ACCESS_TOKEN_EXPIRE_TIME = settings.access_token_expire_time
@@ -57,7 +56,6 @@ def get_current_user(
     Returns:
         _type_: token object
     """
-
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail=f"Couldn't validate Credentials",

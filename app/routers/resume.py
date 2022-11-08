@@ -7,7 +7,6 @@ from ..db import get_db
 from typing import List
 
 router = APIRouter(prefix="/resume", tags=["Resume"])
-
 # # -a-
 # @router.get("/")
 # def HTML_Source_code():
@@ -21,7 +20,6 @@ router = APIRouter(prefix="/resume", tags=["Resume"])
 # # @app.get("/static/images/image2.jpg")
 # def Images():
 #     return
-
 # -1- Find all
 @router.get("/Resume", response_model=List[schemas.FullResume])
 def get_resume(
