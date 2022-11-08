@@ -1,15 +1,6 @@
 name: Build and Deploy Code
 
-# on: [push,pull_request]
-
-on:
-  push:
-    # branches:["main", "hot-fix"]
-    branches:
-      - "main"
-  pull_request:
-    branches:
-      - "test_branch"
+on: [push,pull_request]
 
 jobs:
   Pulling-repo:
