@@ -1,16 +1,16 @@
+from fastapi import FastAPI
 
-from fastapi import FastAPI 
 # from fastapi.staticfiles import StaticFiles
-from .routers import resume,user, auth
+from .routers import resume, user, auth
 from fastapi.middleware.cors import CORSMiddleware
 
 
 # This command is not needed anymore since it was allowing run create statments for sqlalchemy.
 # models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI(           
-    version= "614-772-8409",
-    docs_url= "/",
+app = FastAPI(
+    version="614-772-8409",
+    docs_url="/",
     title="Rony R. Shabo",
     description="""
     BackEnd Python developer
@@ -27,17 +27,18 @@ app = FastAPI(
         One last thing.
         6- Any changes you create would be added under your credentials.
            so you will only be able to change / delete your entries. 
-    """)
-origins=["*"]
+    """,
+)
+origins = ["*"]
 
-app.add_middleware(CORSMiddleware,
-allow_origins=origins,
-allow_credentials=True,
-allow_methods=["*"],
-allow_headers=["*"],
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(resume.router)
 app.include_router(user.router)
 app.include_router(auth.router)
-
