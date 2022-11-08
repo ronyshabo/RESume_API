@@ -8,13 +8,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2.5.0
-      - name: install Python version 3.9
+      - name: install Python version
+      - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
-      - uses: actions/checkout@v2
         with:
           python-version: '3.9' 
-      - run: python main.py
-      - name: update Pip
-        run: Python -m pip install --upgrade pip
-      - name: Install all dependencies
-        run: pip install -r requirements.txt
+      - run: python my_script.py
