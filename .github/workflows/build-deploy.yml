@@ -9,4 +9,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2.5.0
       - name: Python linters Black Check
-  uses: jose-lpa/python-black-check-action@1.0.0
+        uses: jose-lpa/python-black-check-action@1.0.0
