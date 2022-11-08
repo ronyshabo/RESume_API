@@ -6,7 +6,7 @@ jobs:
   Pulling-repo:
     runs-on: ubuntu-latest
     steps:
-      - name: pulling git repo
-        uses: action/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
       - name: say Hi to Rony
         run: echo "Hello Rony!!!"
