@@ -4,7 +4,15 @@ from fastapi import status, Depends, APIRouter, HTTPException
 from sqlalchemy.orm import Session
 from ..db import get_db
 
+import logging
+
 router = APIRouter(prefix="/users", tags=["Users"])
+
+logging.basicConfig(
+    filename="logs/user-logs.log",
+    level=logging.DEBUG,
+    format="%(module)s : %(levelname)s:  %(message)s - : %(asctime)s",
+)
 
 
 @router.post(

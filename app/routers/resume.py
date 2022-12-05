@@ -6,6 +6,13 @@ from sqlalchemy.orm import Session
 from ..db import get_db
 from typing import List
 
+import logging
+
+logging.basicConfig(
+    filename="logs/resume-logs.log",
+    level=logging.DEBUG,
+    format="%(module)s : %(levelname)s:  %(message)s - : %(asctime)s",
+)
 router = APIRouter(prefix="/resume", tags=["Resume"])
 # # -a-
 # @router.get("/")
@@ -35,7 +42,7 @@ def get_resume(
     returns: dictionary obj
     """
     current_user_id = current_user.id  # type: ignore
-    print(f"current_user_id = current_user.id is{current_user_id} = {current_user.id}")
+    logging.info(f"current_user_id = current_user.id is{current_user_id}")
 
     curr_user_posts = (
         db.query(models.Model_Resume)
@@ -45,6 +52,7 @@ def get_resume(
     admin_posts = (
         db.query(models.Model_Resume).filter(models.Model_Resume.owner_id == 3).all()
     )
+    logging.info("Get call for the resume has been successful")
     resume = admin_posts + curr_user_posts
     return resume
 
@@ -63,11 +71,12 @@ def get_Entry_by_ID(id: int, db: Session = Depends(get_db)):
     """
     resume = db.query(models.Model_Resume).filter(models.Model_Resume.id == id).first()
     if not resume:
-        print("Entry was not found")
+        logging.debug(f"Entry was not found when attempted to get an antry by Id {id}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Entry with id {id} was not found",
         )
+
     return resume
 
 
@@ -102,6 +111,9 @@ def create_entry(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"resume with id: {id} Does not exist",
         )
+    logging.info(
+        f"A new experiance has been added to the Database by user {current_user}"
+    )
     return new_experiance
 
 
@@ -142,6 +154,10 @@ def update_entry(
     updated_resume.update(updated_resumes.dict(), synchronize_session=False)
 
     db.commit()
+    logging.info(
+        f"A successful amend to post {id} has been made by User {current_user}"
+    )
+    logging.info("testing new revision for heroku")
 
     return updated_resume.first()
 
@@ -167,12 +183,18 @@ def delete_entry(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"resume with id: {id} Does not exist",
         )
-
+    logging.debug(
+        "Attempt to delete post with id {id} was unsuccessful {id} Doesn't exist"
+    )
     if resume.owner_id != current_user.id:  # type: ignore
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You are not authorized to Delete this Entry",
         )
+    logging.warning(
+        f"The Current user: {current_user} is not authorized to Delete the Entry with id {id} that belongs to {resume.owner_id} "
+    )
     resume_query.delete(synchronize_session=False)
     db.commit()
+    logging.info(f"Successfully deleted post with id {id}")
     return {"data": "The Entry with id {id} was successfully deleted"}
