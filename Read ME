@@ -15,7 +15,7 @@ Most importantly don't forget to CD into the correct directory.
    $ pip install uvicorn
    
    Run Uvicorn locally using
-   $uvicorn app.main:app --reload
+   python -m uvicorn app.main:app --reload
    
    * this --reload flag helps your application update and run everytime you do a change, 
   and it reflects directly to the API
