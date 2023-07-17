@@ -5,8 +5,6 @@ bin/**
 lib/**
 
 # Python specific 
-**/pyvenv.cfg
-**/pip-selfcheck.json
 **/secrets.py
 .coverage
 .env
